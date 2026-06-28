@@ -18,6 +18,7 @@ import { CalendarPicker } from "@/components/calendar-picker";
 import { ViewTabs } from "@/components/view-tabs";
 import { WatchToggle } from "@/components/watch-toggle";
 import { AddShowToggle } from "@/components/add-show-toggle";
+import { Thumb } from "@/components/thumb";
 
 function formatHeading(dateStr: string): { weekday: string; date: string; day: string; month: string } {
   const d = new Date(`${dateStr}T00:00:00`);
@@ -117,6 +118,7 @@ function DateStage({
   count,
   nextLabel,
   nextHref,
+  backdropUrl,
 }: {
   eyebrow: string;
   weekday: string;
@@ -125,32 +127,61 @@ function DateStage({
   count: number;
   nextLabel?: string;
   nextHref?: string;
+  backdropUrl?: string | null;
 }) {
+  const hasBackdrop = Boolean(backdropUrl);
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-gradient-to-b from-white/[0.04] via-white/[0.015] to-transparent px-6 py-6 mb-8">
-      <div className="flex items-start justify-between">
-        <p className="text-xs uppercase tracking-widest text-stone-500 font-medium mb-3">{eyebrow}</p>
+    <div
+      className={[
+        "relative overflow-hidden rounded-2xl px-6 py-6 mb-8",
+        hasBackdrop
+          ? "min-h-[11rem]"
+          : "border border-white/[0.06] bg-gradient-to-b from-white/[0.04] via-white/[0.015] to-transparent",
+      ].join(" ")}
+    >
+      {hasBackdrop && (
+        <>
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${backdropUrl})` }}
+          />
+          <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/20" />
+        </>
+      )}
+      <div className="relative z-10 flex items-start justify-between">
+        <p className={["text-xs uppercase tracking-widest font-medium mb-3", hasBackdrop ? "text-white/70" : "text-stone-500"].join(" ")}>
+          {eyebrow}
+        </p>
         {nextHref && nextLabel && (
           <Link
             href={nextHref}
-            className="text-[13px] text-[#FF00AA]/90 hover:text-[#FF33BD] transition-colors -mt-1"
+            className={[
+              "relative z-10 text-[13px] transition-colors -mt-1",
+              hasBackdrop ? "text-[#FF66C4] hover:text-[#FF99D9]" : "text-[#FF00AA]/90 hover:text-[#FF33BD]",
+            ].join(" ")}
           >
             {nextLabel} ›
           </Link>
         )}
       </div>
-      <div className="flex items-baseline gap-4">
-        <span className="font-[family-name:var(--font-heading)] text-6xl font-bold text-[#FF00AA] tabular-nums leading-none">
+      <div className="relative z-10 flex items-baseline gap-4">
+        <span
+          className={[
+            "font-[family-name:var(--font-heading)] text-6xl font-bold tabular-nums leading-none",
+            hasBackdrop ? "text-[#FF66C4]" : "text-[#FF00AA]",
+          ].join(" ")}
+        >
           {day}
         </span>
         <div className="flex flex-col">
-          <span className="font-[family-name:var(--font-heading)] text-xl font-semibold text-stone-50 leading-tight">
+          <span className={["font-[family-name:var(--font-heading)] text-xl font-semibold leading-tight", hasBackdrop ? "text-white" : "text-stone-50"].join(" ")}>
             {weekday}
           </span>
-          <span className="text-sm text-stone-500 uppercase tracking-wide">{month}</span>
+          <span className={["text-sm uppercase tracking-wide", hasBackdrop ? "text-white/60" : "text-stone-500"].join(" ")}>{month}</span>
         </div>
       </div>
-      <p className="text-sm text-stone-400 mt-4">{summaryText(count)}</p>
+      <p className={["relative z-10 text-sm mt-4", hasBackdrop ? "text-white/70" : "text-stone-400"].join(" ")}>{summaryText(count)}</p>
     </div>
   );
 }
@@ -161,33 +192,57 @@ function CompactDayHeading({
   count,
   prevHref,
   nextHref,
+  backdropUrl,
 }: {
   weekday: string;
   date: string;
   count: number;
   prevHref: string;
   nextHref: string;
+  backdropUrl?: string | null;
 }) {
+  const hasBackdrop = Boolean(backdropUrl);
   return (
-    <div className="flex items-center justify-between mb-6">
-      <div>
-        <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-stone-50">
+    <div
+      className={[
+        "relative overflow-hidden flex items-center justify-between mb-6",
+        hasBackdrop ? "rounded-2xl px-5 py-5" : "",
+      ].join(" ")}
+    >
+      {hasBackdrop && (
+        <>
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${backdropUrl})` }}
+          />
+          <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/20" />
+        </>
+      )}
+      <div className="relative z-10">
+        <h2 className={["font-[family-name:var(--font-heading)] text-xl font-bold", hasBackdrop ? "text-white" : "text-stone-50"].join(" ")}>
           {weekday}, {date}
         </h2>
-        <p className="text-sm text-stone-500 mt-0.5">{summaryText(count)}</p>
+        <p className={["text-sm mt-0.5", hasBackdrop ? "text-white/70" : "text-stone-500"].join(" ")}>{summaryText(count)}</p>
       </div>
-      <div className="flex items-center gap-1 shrink-0">
+      <div className="relative z-10 flex items-center gap-1 shrink-0">
         <Link
           href={prevHref}
           aria-label="Previous day"
-          className="h-11 w-11 flex items-center justify-center rounded-full text-stone-400 hover:text-stone-50 hover:bg-white/[0.06] transition-colors"
+          className={[
+            "h-11 w-11 flex items-center justify-center rounded-full transition-colors",
+            hasBackdrop ? "text-white/80 hover:text-white hover:bg-white/[0.15]" : "text-stone-400 hover:text-stone-50 hover:bg-white/[0.06]",
+          ].join(" ")}
         >
           ‹
         </Link>
         <Link
           href={nextHref}
           aria-label="Next day"
-          className="h-11 w-11 flex items-center justify-center rounded-full text-stone-400 hover:text-stone-50 hover:bg-white/[0.06] transition-colors"
+          className={[
+            "h-11 w-11 flex items-center justify-center rounded-full transition-colors",
+            hasBackdrop ? "text-white/80 hover:text-white hover:bg-white/[0.15]" : "text-stone-400 hover:text-stone-50 hover:bg-white/[0.06]",
+          ].join(" ")}
         >
           ›
         </Link>
@@ -231,11 +286,14 @@ function WatchedRow({ show }: { show: WatchedShow }) {
   const { series: s, platform, nextEpisode } = show;
   return (
     <li className="flex items-center justify-between gap-4 min-h-[3.25rem] py-3 border-b border-white/[0.06] last:border-0">
-      <div className="min-w-0 flex-1">
-        <p className="text-[15px] font-semibold text-stone-50 truncate">{s.title}</p>
-        <p className="text-[13px] text-stone-400 mt-0.5 truncate">
-          {nextEpisode ? formatNextAirs(nextEpisode) : "No upcoming episodes scheduled"}
-        </p>
+      <div className="min-w-0 flex-1 flex items-center gap-3">
+        <Thumb src={s.artwork} title={s.title} size={10} />
+        <div className="min-w-0">
+          <p className="text-[15px] font-semibold text-stone-50 truncate">{s.title}</p>
+          <p className="text-[13px] text-stone-400 mt-0.5 truncate">
+            {nextEpisode ? formatNextAirs(nextEpisode) : "No upcoming episodes scheduled"}
+          </p>
+        </div>
       </div>
       <div className="shrink-0 flex items-center gap-2">
         <span className="text-[11px] font-medium uppercase tracking-wide text-stone-500 whitespace-nowrap">
@@ -313,6 +371,7 @@ async function TodayView({
   const rows = await getTodayReleases(platformIds);
   const todayStr = todayDateString();
   const { weekday, day, month } = formatHeading(todayStr);
+  const backdropUrl = sortByTitle(rows).map((r) => r.series?.artwork ?? r.artworkUrl).find(Boolean) ?? null;
 
   return (
     <section aria-labelledby="heading-today">
@@ -325,6 +384,7 @@ async function TodayView({
         count={groupByShow(rows).length}
         nextLabel="Tomorrow"
         nextHref={buildHref("calendar", shiftDate(todayStr, 1), platformSlugs)}
+        backdropUrl={backdropUrl}
       />
       <div className="flex justify-end mb-4">
         <Suspense>
@@ -402,6 +462,7 @@ async function CalendarView({
   const platformIds = await resolvePlatformIds(platformSlugs);
   const rows = await getReleasesForDate(date, platformIds);
   const { weekday, date: dateLabel } = formatHeading(date);
+  const backdropUrl = sortByTitle(rows).map((r) => r.series?.artwork ?? r.artworkUrl).find(Boolean) ?? null;
 
   return (
     <section aria-labelledby="heading-calendar">
@@ -415,6 +476,7 @@ async function CalendarView({
         count={groupByShow(rows).length}
         prevHref={buildHref("calendar", shiftDate(date, -1), platformSlugs)}
         nextHref={buildHref("calendar", shiftDate(date, 1), platformSlugs)}
+        backdropUrl={backdropUrl}
       />
       <ReleaseList
         releases={rows}

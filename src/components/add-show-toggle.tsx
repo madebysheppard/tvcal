@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { SeriesPicker } from "@/components/series-picker";
 
-type SeriesOption = { id: string; title: string; platformName: string };
+type SeriesOption = { id: string; title: string; platformName: string; artwork: string | null };
 
 export function AddShowToggle({ series }: { series: SeriesOption[] }) {
   const [open, setOpen] = useState(false);

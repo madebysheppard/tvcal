@@ -1,5 +1,6 @@
 import type { ReleaseWithRelations } from "@/lib/releases";
 import { WatchToggle } from "@/components/watch-toggle";
+import { Thumb } from "@/components/thumb";
 
 function episodeMeta(r: ReleaseWithRelations): { code: string | null; subtitle: string | null } {
   const code =
@@ -57,21 +58,24 @@ export function ReleaseItem({
     <li className="group relative flex items-center justify-between gap-4 min-h-[3.25rem] py-3 border-b border-white/[0.06] last:border-0 transition-colors -mx-4 px-4 hover:bg-white/[0.025]">
       <span className="absolute left-0 top-1/2 -translate-y-1/2 h-0 w-[2px] bg-[#FF00AA] transition-all duration-200 group-hover:h-2/3" />
 
-      <div className="flex-1 min-w-0">
-        <p className="text-[15px] font-semibold text-stone-50 leading-snug truncate">
-          {showTitle}
-        </p>
-        {(code || subtitle || meta) && (
-          <p className="text-[13px] text-stone-400 mt-0.5 leading-snug truncate">
-            {meta ?? (
-              <>
-                {code && <span className="font-mono tabular-nums text-stone-400 mr-2">{code}</span>}
-                {subtitle && guestList && <span className="text-stone-500">Guests: {subtitle}</span>}
-                {subtitle && !guestList && <span className="text-stone-500">&ldquo;{subtitle}&rdquo;</span>}
-              </>
-            )}
+      <div className="flex-1 min-w-0 flex items-center gap-3">
+        <Thumb src={first.series?.artwork ?? first.artworkUrl} title={showTitle} size={10} />
+        <div className="min-w-0">
+          <p className="text-[15px] font-semibold text-stone-50 leading-snug truncate">
+            {showTitle}
           </p>
-        )}
+          {(code || subtitle || meta) && (
+            <p className="text-[13px] text-stone-400 mt-0.5 leading-snug truncate">
+              {meta ?? (
+                <>
+                  {code && <span className="font-mono tabular-nums text-stone-400 mr-2">{code}</span>}
+                  {subtitle && guestList && <span className="text-stone-500">Guests: {subtitle}</span>}
+                  {subtitle && !guestList && <span className="text-stone-500">&ldquo;{subtitle}&rdquo;</span>}
+                </>
+              )}
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="shrink-0 flex items-center gap-2">

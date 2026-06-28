@@ -80,6 +80,7 @@ export async function getAllSeriesForPicker() {
       id: series.id,
       title: series.title,
       slug: series.slug,
+      artwork: series.artwork,
       platformName: platforms.name,
     })
     .from(series)

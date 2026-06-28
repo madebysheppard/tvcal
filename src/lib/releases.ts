@@ -13,7 +13,7 @@ export type ReleaseWithRelations = {
   synopsis: string | null;
   artworkUrl: string | null;
   platform: { id: string; name: string; slug: string };
-  series: { id: string; title: string; slug: string } | null;
+  series: { id: string; title: string; slug: string; artwork: string | null } | null;
 };
 
 function formatDate(offsetDays: number): string {
@@ -43,6 +43,7 @@ export async function getReleasesForDate(
       seriesId: series.id,
       seriesTitle: series.title,
       seriesSlug: series.slug,
+      seriesArtwork: series.artwork,
     })
     .from(releases)
     .innerJoin(platforms, eq(releases.platformId, platforms.id))
@@ -70,7 +71,7 @@ export async function getReleasesForDate(
     artworkUrl: r.artworkUrl,
     platform: { id: r.platformId, name: r.platformName, slug: r.platformSlug },
     series: r.seriesId
-      ? { id: r.seriesId, title: r.seriesTitle!, slug: r.seriesSlug! }
+      ? { id: r.seriesId, title: r.seriesTitle!, slug: r.seriesSlug!, artwork: r.seriesArtwork }
       : null,
   }));
 }
@@ -104,6 +105,7 @@ export async function getReleasesForRange(
       seriesId: series.id,
       seriesTitle: series.title,
       seriesSlug: series.slug,
+      seriesArtwork: series.artwork,
     })
     .from(releases)
     .innerJoin(platforms, eq(releases.platformId, platforms.id))
@@ -132,7 +134,7 @@ export async function getReleasesForRange(
     artworkUrl: r.artworkUrl,
     platform: { id: r.platformId, name: r.platformName, slug: r.platformSlug },
     series: r.seriesId
-      ? { id: r.seriesId, title: r.seriesTitle!, slug: r.seriesSlug! }
+      ? { id: r.seriesId, title: r.seriesTitle!, slug: r.seriesSlug!, artwork: r.seriesArtwork }
       : null,
   }));
 }

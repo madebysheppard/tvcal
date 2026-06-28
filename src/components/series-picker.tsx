@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { WatchToggle } from "@/components/watch-toggle";
+import { Thumb } from "@/components/thumb";
 
-type SeriesOption = { id: string; title: string; platformName: string };
+type SeriesOption = { id: string; title: string; platformName: string; artwork: string | null };
 
 export function SeriesPicker({ series }: { series: SeriesOption[] }) {
   const [query, setQuery] = useState("");
@@ -28,9 +29,12 @@ export function SeriesPicker({ series }: { series: SeriesOption[] }) {
             key={s.id}
             className="flex items-center justify-between gap-3 py-2.5 border-b border-white/[0.06] last:border-0"
           >
-            <div className="min-w-0">
-              <p className="text-sm font-medium text-stone-100 truncate">{s.title}</p>
-              <p className="text-[12px] text-stone-500">{s.platformName}</p>
+            <div className="flex items-center gap-3 min-w-0">
+              <Thumb src={s.artwork} title={s.title} size={9} />
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-stone-100 truncate">{s.title}</p>
+                <p className="text-[12px] text-stone-500">{s.platformName}</p>
+              </div>
             </div>
             <WatchToggle seriesId={s.id} isWatching={false} variant="block" />
           </li>
