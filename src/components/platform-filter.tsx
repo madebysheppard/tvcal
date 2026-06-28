@@ -57,7 +57,7 @@ export function PlatformFilter({ platforms }: { platforms: Platform[] }) {
         onScroll={updateFade}
         role="group"
         aria-label="Filter by platform"
-        className="flex items-center gap-2 overflow-x-auto pb-1 -mx-1 px-1"
+        className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 -mx-1 px-1"
       >
         {platforms.map((p) => {
           const active = selected.includes(p.slug);
@@ -92,7 +92,7 @@ export function PlatformFilter({ platforms }: { platforms: Platform[] }) {
       {showFade && (
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute right-0 top-0 bottom-1 w-10 bg-gradient-to-l from-[#0c0b0a] to-transparent"
+          className="pointer-events-none absolute right-0 top-0 bottom-1 w-10 bg-gradient-to-l from-[#141210] to-transparent"
         />
       )}
     </div>

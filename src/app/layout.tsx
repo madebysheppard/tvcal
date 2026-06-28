@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Outfit, Work_Sans, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -22,6 +22,15 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Streaming Guide",
   description: "What's new to watch today and this week, across your streaming platforms.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Streaming Guide",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0c0b0a",
 };
 
 export default function RootLayout({

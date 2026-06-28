@@ -9,13 +9,14 @@ import {
 } from "@/lib/releases";
 import type { ReleaseWithRelations } from "@/lib/releases";
 import { getWatchedSeriesIds, getWatchlistWithUpcoming, getAllSeriesForPicker } from "@/lib/watchlist";
+import type { WatchedShow } from "@/lib/watchlist";
 import { ReleaseItem } from "@/components/release-item";
-import { PlatformFilter } from "@/components/platform-filter";
+import { FilterToggle } from "@/components/filter-toggle";
 import { ReleaseSkeleton } from "@/components/release-skeleton";
 import { CalendarPicker } from "@/components/calendar-picker";
 import { ViewTabs } from "@/components/view-tabs";
 import { WatchToggle } from "@/components/watch-toggle";
-import { SeriesPicker } from "@/components/series-picker";
+import { AddShowToggle } from "@/components/add-show-toggle";
 
 function formatHeading(dateStr: string): { weekday: string; date: string; day: string; month: string } {
   const d = new Date(`${dateStr}T00:00:00`);
@@ -207,10 +208,49 @@ function formatNextAirs(ep: {
   return `${code}${dateLabel}${title}`;
 }
 
+function groupWatchedByDate(shows: WatchedShow[]): { dateGroups: { date: string; shows: WatchedShow[] }[]; noDate: WatchedShow[] } {
+  const map = new Map<string, WatchedShow[]>();
+  const noDate: WatchedShow[] = [];
+  for (const s of shows) {
+    if (!s.nextEpisode) {
+      noDate.push(s);
+      continue;
+    }
+    const arr = map.get(s.nextEpisode.releaseDate) ?? [];
+    arr.push(s);
+    map.set(s.nextEpisode.releaseDate, arr);
+  }
+  const dateGroups = Array.from(map.keys())
+    .sort()
+    .map((date) => ({ date, shows: map.get(date)! }));
+  return { dateGroups, noDate };
+}
+
+function WatchedRow({ show }: { show: WatchedShow }) {
+  const { series: s, platform, nextEpisode } = show;
+  return (
+    <li className="flex items-center justify-between gap-4 min-h-[3.25rem] py-3 border-b border-white/[0.06] last:border-0">
+      <div className="min-w-0 flex-1">
+        <p className="text-[15px] font-semibold text-stone-50 truncate">{s.title}</p>
+        <p className="text-[13px] text-stone-400 mt-0.5 truncate">
+          {nextEpisode ? formatNextAirs(nextEpisode) : "No upcoming episodes scheduled"}
+        </p>
+      </div>
+      <div className="shrink-0 flex items-center gap-2">
+        <span className="text-[11px] font-medium uppercase tracking-wide text-stone-500 whitespace-nowrap">
+          {platform.name}
+        </span>
+        <WatchToggle seriesId={s.id} isWatching={true} />
+      </div>
+    </li>
+  );
+}
+
 async function WatchingView() {
   const [shows, allSeries] = await Promise.all([getWatchlistWithUpcoming(), getAllSeriesForPicker()]);
   const watchedIds = new Set(shows.map((s) => s.series.id));
   const pickerOptions = allSeries.filter((s) => !watchedIds.has(s.id));
+  const { dateGroups, noDate } = groupWatchedByDate(shows);
 
   return (
     <section aria-labelledby="heading-watching">
@@ -221,33 +261,38 @@ async function WatchingView() {
           You&apos;re not watching anything yet — add a show below to see its upcoming episodes here.
         </p>
       ) : (
-        <ul role="list" className="mb-10">
-          {shows.map(({ series: s, platform, nextEpisode }) => (
-            <li
-              key={s.id}
-              className="flex items-center justify-between gap-4 min-h-[3.25rem] py-3 border-b border-white/[0.06] last:border-0"
-            >
-              <div className="min-w-0 flex-1">
-                <p className="text-[15px] font-semibold text-stone-50 truncate">{s.title}</p>
-                <p className="text-[13px] text-stone-400 mt-0.5 truncate">
-                  {nextEpisode ? formatNextAirs(nextEpisode) : "No upcoming episodes scheduled"}
-                </p>
+        <div className="space-y-8 mb-10">
+          {dateGroups.map(({ date, shows: dayShows }) => {
+            const { weekday, date: dateLabel } = formatHeading(date);
+            return (
+              <div key={date}>
+                <div className="flex items-baseline gap-2.5 mb-2">
+                  <h3 className="font-[family-name:var(--font-heading)] text-base font-bold text-stone-50">{weekday}</h3>
+                  <span className="text-sm text-stone-500">{dateLabel}</span>
+                </div>
+                <ul role="list">
+                  {dayShows.map((show) => (
+                    <WatchedRow key={show.series.id} show={show} />
+                  ))}
+                </ul>
               </div>
-              <div className="shrink-0 flex items-center gap-2">
-                <span className="text-[11px] font-medium uppercase tracking-wide text-stone-500 whitespace-nowrap">
-                  {platform.name}
-                </span>
-                <WatchToggle seriesId={s.id} isWatching={true} />
-              </div>
-            </li>
-          ))}
-        </ul>
+            );
+          })}
+
+          {noDate.length > 0 && (
+            <div>
+              <h3 className="text-sm font-semibold text-stone-400 mb-2">No date scheduled</h3>
+              <ul role="list">
+                {noDate.map((show) => (
+                  <WatchedRow key={show.series.id} show={show} />
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       )}
 
-      <div className="border-t border-white/[0.06] pt-6">
-        <p className="text-xs uppercase tracking-widest text-stone-500 font-medium mb-3">Add a show</p>
-        <SeriesPicker series={pickerOptions} />
-      </div>
+      <AddShowToggle series={pickerOptions} />
     </section>
   );
 }
@@ -376,20 +421,14 @@ export default async function HomePage({
             <h1 className="font-[family-name:var(--font-heading)] text-lg font-bold tracking-tight text-stone-50">
               Streaming Guide
             </h1>
-            {selectedPlatformNames.length > 0 && (
-              <p className="text-[12px] text-stone-500 truncate max-w-[55%] text-right">
-                <span className="text-amber-400/90">{selectedPlatformNames.length} filtered</span>
-                <span className="hidden sm:inline">: {selectedPlatformNames.join(", ")}</span>
-              </p>
-            )}
           </div>
 
-          <div className="flex flex-col gap-3.5">
+          <div className="flex items-center justify-between gap-3">
             <Suspense>
               <ViewTabs />
             </Suspense>
             <Suspense>
-              <PlatformFilter platforms={allPlatforms} />
+              <FilterToggle platforms={allPlatforms} selectedNames={selectedPlatformNames} />
             </Suspense>
           </div>
         </div>

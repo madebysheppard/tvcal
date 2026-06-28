@@ -33,7 +33,7 @@ export function ViewTabs() {
   );
 
   return (
-    <div role="tablist" aria-label="Browse releases" className="flex items-center gap-6 overflow-x-auto border-b border-white/[0.07]">
+    <div role="tablist" aria-label="Browse releases" className="flex items-center gap-6 overflow-x-auto no-scrollbar min-w-0">
       {TABS.map((tab) => {
         const isActive = active === tab.key;
         return (

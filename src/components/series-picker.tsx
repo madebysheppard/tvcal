@@ -19,7 +19,7 @@ export function SeriesPicker({ series }: { series: SeriesOption[] }) {
         placeholder="Search shows to add…"
         className="w-full min-h-11 px-4 rounded-full bg-white/[0.04] border border-white/[0.1] text-stone-100 placeholder:text-stone-500 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/70 mb-4"
       />
-      <ul role="list" className="max-h-96 overflow-y-auto">
+      <ul role="list" className="max-h-96 overflow-y-auto no-scrollbar">
         {filtered.length === 0 && (
           <li className="text-sm text-stone-500 py-6">No shows match &ldquo;{query}&rdquo;.</li>
         )}
