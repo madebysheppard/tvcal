@@ -8,6 +8,7 @@ import {
   groupByDate,
 } from "@/lib/releases";
 import type { ReleaseWithRelations } from "@/lib/releases";
+import type { Platform } from "@/db/schema";
 import { getWatchedSeriesIds, getWatchlistWithUpcoming, getAllSeriesForPicker } from "@/lib/watchlist";
 import type { WatchedShow } from "@/lib/watchlist";
 import { ReleaseItem } from "@/components/release-item";
@@ -297,7 +298,17 @@ async function WatchingView() {
   );
 }
 
-async function TodayView({ platformSlugs, watchedSeriesIds }: { platformSlugs: string[]; watchedSeriesIds: Set<string> }) {
+async function TodayView({
+  platformSlugs,
+  watchedSeriesIds,
+  allPlatforms,
+  selectedPlatformNames,
+}: {
+  platformSlugs: string[];
+  watchedSeriesIds: Set<string>;
+  allPlatforms: Platform[];
+  selectedPlatformNames: string[];
+}) {
   const platformIds = await resolvePlatformIds(platformSlugs);
   const rows = await getTodayReleases(platformIds);
   const todayStr = todayDateString();
@@ -315,6 +326,11 @@ async function TodayView({ platformSlugs, watchedSeriesIds }: { platformSlugs: s
         nextLabel="Tomorrow"
         nextHref={buildHref("calendar", shiftDate(todayStr, 1), platformSlugs)}
       />
+      <div className="flex justify-end mb-4">
+        <Suspense>
+          <FilterToggle platforms={allPlatforms} selectedNames={selectedPlatformNames} />
+        </Suspense>
+      </div>
       <ReleaseList
         releases={rows}
         emptyLabel={`No releases today${platformSlugs.length ? " for the selected platforms" : ""}.`}
@@ -324,7 +340,17 @@ async function TodayView({ platformSlugs, watchedSeriesIds }: { platformSlugs: s
   );
 }
 
-async function WeekView({ platformSlugs, watchedSeriesIds }: { platformSlugs: string[]; watchedSeriesIds: Set<string> }) {
+async function WeekView({
+  platformSlugs,
+  watchedSeriesIds,
+  allPlatforms,
+  selectedPlatformNames,
+}: {
+  platformSlugs: string[];
+  watchedSeriesIds: Set<string>;
+  allPlatforms: Platform[];
+  selectedPlatformNames: string[];
+}) {
   const platformIds = await resolvePlatformIds(platformSlugs);
   const rows = await getReleasesForRange(0, 6, platformIds);
   const days = groupByDate(rows);
@@ -339,7 +365,12 @@ async function WeekView({ platformSlugs, watchedSeriesIds }: { platformSlugs: st
 
   return (
     <section aria-labelledby="heading-week">
-      <p className="text-xs uppercase tracking-widest text-stone-500 font-medium mb-1">This week</p>
+      <div className="flex items-center justify-between mb-1">
+        <p className="text-xs uppercase tracking-widest text-stone-500 font-medium">This week</p>
+        <Suspense>
+          <FilterToggle platforms={allPlatforms} selectedNames={selectedPlatformNames} />
+        </Suspense>
+      </div>
       <h2 id="heading-week" className="sr-only">This week's releases</h2>
       <div className="space-y-9 mt-5">
         {days.map(({ date, releases: dayReleases }) => {
@@ -422,30 +453,25 @@ export default async function HomePage({
             <h1 className="font-[family-name:var(--font-heading)] text-lg font-bold tracking-tight text-stone-50">
               Streaming Guide
             </h1>
-            <div className="flex items-center gap-1">
-              <Link
-                href={calendarHref}
-                aria-label="Open calendar"
-                aria-current={view === "calendar" ? "page" : undefined}
-                className={[
-                  "h-11 w-11 flex items-center justify-center rounded-full transition-colors",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70",
-                  view === "calendar"
-                    ? "bg-white/[0.08] text-stone-100"
-                    : "text-stone-400 hover:text-stone-100 hover:bg-white/[0.06]",
-                ].join(" ")}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <rect x="3" y="5" width="18" height="16" rx="2" />
-                  <path d="M3 10h18" />
-                  <path d="M8 3v4" />
-                  <path d="M16 3v4" />
-                </svg>
-              </Link>
-              <Suspense>
-                <FilterToggle platforms={allPlatforms} selectedNames={selectedPlatformNames} />
-              </Suspense>
-            </div>
+            <Link
+              href={calendarHref}
+              aria-label="Open calendar"
+              aria-current={view === "calendar" ? "page" : undefined}
+              className={[
+                "h-11 w-11 flex items-center justify-center rounded-full transition-colors",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70",
+                view === "calendar"
+                  ? "bg-white/[0.08] text-stone-100"
+                  : "text-stone-400 hover:text-stone-100 hover:bg-white/[0.06]",
+              ].join(" ")}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="3" y="5" width="18" height="16" rx="2" />
+                <path d="M3 10h18" />
+                <path d="M8 3v4" />
+                <path d="M16 3v4" />
+              </svg>
+            </Link>
           </div>
 
           <Suspense>
@@ -457,8 +483,22 @@ export default async function HomePage({
       <main id="main-content" className="max-w-2xl mx-auto px-5 py-8">
         <Suspense fallback={<ReleaseSkeleton />}>
           {view === "watching" && <WatchingView />}
-          {view === "today" && <TodayView platformSlugs={platformSlugs} watchedSeriesIds={watchedSeriesIds} />}
-          {view === "week" && <WeekView platformSlugs={platformSlugs} watchedSeriesIds={watchedSeriesIds} />}
+          {view === "today" && (
+            <TodayView
+              platformSlugs={platformSlugs}
+              watchedSeriesIds={watchedSeriesIds}
+              allPlatforms={allPlatforms}
+              selectedPlatformNames={selectedPlatformNames}
+            />
+          )}
+          {view === "week" && (
+            <WeekView
+              platformSlugs={platformSlugs}
+              watchedSeriesIds={watchedSeriesIds}
+              allPlatforms={allPlatforms}
+              selectedPlatformNames={selectedPlatformNames}
+            />
+          )}
           {view === "calendar" && (
             <CalendarView platformSlugs={platformSlugs} date={selectedDate} watchedSeriesIds={watchedSeriesIds} />
           )}
