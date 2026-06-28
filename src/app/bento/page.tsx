@@ -57,7 +57,7 @@ export default async function BentoConceptPage() {
         date,
         title: first.series?.title ?? first.title,
         platform: first.platform.name,
-        artworkUrl: first.artworkUrl,
+        artworkUrl: first.series?.artwork ?? first.artworkUrl,
         extra: releases.length - 1,
       };
     })
