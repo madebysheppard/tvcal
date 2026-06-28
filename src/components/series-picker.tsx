@@ -17,7 +17,7 @@ export function SeriesPicker({ series }: { series: SeriesOption[] }) {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search shows to add…"
-        className="w-full min-h-11 px-4 rounded-full bg-white/[0.04] border border-white/[0.1] text-stone-100 placeholder:text-stone-500 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/70 mb-4"
+        className="w-full min-h-11 px-4 rounded-full bg-white/[0.04] border border-white/[0.1] text-stone-100 placeholder:text-stone-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF00AA]/70 mb-4"
       />
       <ul role="list" className="max-h-96 overflow-y-auto no-scrollbar">
         {filtered.length === 0 && (

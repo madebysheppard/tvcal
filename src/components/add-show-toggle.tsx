@@ -15,9 +15,9 @@ export function AddShowToggle({ series }: { series: SeriesOption[] }) {
         aria-expanded={open}
         className={[
           "min-h-11 px-4 text-[13px] font-medium rounded-full border transition-colors cursor-pointer",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0b0a]",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF00AA]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0b0a]",
           open
-            ? "bg-amber-400 text-stone-950 border-amber-400"
+            ? "bg-[#FF00AA] text-stone-950 border-[#FF00AA]"
             : "bg-transparent text-stone-300 border-white/[0.12] hover:border-white/25",
         ].join(" ")}
       >

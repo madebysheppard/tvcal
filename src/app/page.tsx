@@ -133,14 +133,14 @@ function DateStage({
         {nextHref && nextLabel && (
           <Link
             href={nextHref}
-            className="text-[13px] text-amber-400/90 hover:text-amber-300 transition-colors -mt-1"
+            className="text-[13px] text-[#FF00AA]/90 hover:text-[#FF33BD] transition-colors -mt-1"
           >
             {nextLabel} ›
           </Link>
         )}
       </div>
       <div className="flex items-baseline gap-4">
-        <span className="font-[family-name:var(--font-heading)] text-6xl font-bold text-amber-400 tabular-nums leading-none">
+        <span className="font-[family-name:var(--font-heading)] text-6xl font-bold text-[#FF00AA] tabular-nums leading-none">
           {day}
         </span>
         <div className="flex flex-col">
@@ -466,7 +466,7 @@ export default async function HomePage({
               aria-pressed={view === "calendar"}
               className={[
                 "h-11 w-11 flex items-center justify-center rounded-full transition-colors",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF00AA]/70",
                 view === "calendar"
                   ? "bg-white/[0.08] text-stone-100"
                   : "text-stone-400 hover:text-stone-100 hover:bg-white/[0.06]",

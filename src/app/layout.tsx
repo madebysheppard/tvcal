@@ -46,7 +46,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-[#0c0b0a] text-stone-200">
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:rounded focus:bg-amber-400 focus:text-stone-950 focus:text-sm focus:font-semibold focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#0c0b0a]"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:rounded focus:bg-[#FF00AA] focus:text-stone-950 focus:text-sm focus:font-semibold focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#0c0b0a]"
         >
           Skip to main content
         </a>

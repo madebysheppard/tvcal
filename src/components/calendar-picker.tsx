@@ -77,7 +77,7 @@ export function CalendarPicker() {
       <div className="flex items-center justify-between mb-5">
         <button
           onClick={prevMonth}
-          className="h-11 w-11 flex items-center justify-center rounded-full text-stone-400 hover:text-stone-50 hover:bg-white/[0.06] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70"
+          className="h-11 w-11 flex items-center justify-center rounded-full text-stone-400 hover:text-stone-50 hover:bg-white/[0.06] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF00AA]/70"
           aria-label="Previous month"
         >
           ‹
@@ -89,7 +89,7 @@ export function CalendarPicker() {
           {!isCurrentMonth && (
             <button
               onClick={jumpToToday}
-              className="text-[11px] text-amber-400/90 hover:text-amber-300 transition-colors cursor-pointer"
+              className="text-[11px] text-[#FF00AA]/90 hover:text-[#FF33BD] transition-colors cursor-pointer"
             >
               Jump to today
             </button>
@@ -97,7 +97,7 @@ export function CalendarPicker() {
         </div>
         <button
           onClick={nextMonth}
-          className="h-11 w-11 flex items-center justify-center rounded-full text-stone-400 hover:text-stone-50 hover:bg-white/[0.06] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70"
+          className="h-11 w-11 flex items-center justify-center rounded-full text-stone-400 hover:text-stone-50 hover:bg-white/[0.06] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF00AA]/70"
           aria-label="Next month"
         >
           ›
@@ -125,11 +125,11 @@ export function CalendarPicker() {
               onClick={() => selectDate(dateStr)}
               className={[
                 "text-[13px] tabular-nums h-11 w-full rounded-full transition-colors cursor-pointer",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF00AA]/70",
                 isSelected
-                  ? "bg-amber-400 text-stone-950 font-semibold"
+                  ? "bg-[#FF00AA] text-stone-950 font-semibold"
                   : isToday
-                  ? "text-amber-400 font-semibold ring-1 ring-amber-400/40"
+                  ? "text-[#FF00AA] font-semibold ring-1 ring-[#FF00AA]/40"
                   : "text-stone-300 hover:bg-white/[0.06]",
               ].join(" ")}
             >

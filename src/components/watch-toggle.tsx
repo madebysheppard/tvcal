@@ -29,9 +29,9 @@ export function WatchToggle({
         aria-pressed={isWatching}
         className={[
           "min-h-11 px-4 text-[13px] font-medium rounded-full border transition-colors cursor-pointer whitespace-nowrap disabled:opacity-50",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0b0a]",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF00AA]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0b0a]",
           isWatching
-            ? "bg-amber-400 text-stone-950 border-amber-400"
+            ? "bg-[#FF00AA] text-stone-950 border-[#FF00AA]"
             : "bg-transparent text-stone-300 border-white/[0.12] hover:border-white/25",
         ].join(" ")}
       >
@@ -48,8 +48,8 @@ export function WatchToggle({
       aria-label={isWatching ? "Remove from watchlist" : "Add to watchlist"}
       className={[
         "shrink-0 h-11 w-11 flex items-center justify-center rounded-full transition-colors cursor-pointer disabled:opacity-50",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70",
-        isWatching ? "text-amber-400" : "text-stone-500 hover:text-stone-200 hover:bg-white/[0.06]",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF00AA]/70",
+        isWatching ? "text-[#FF00AA]" : "text-stone-500 hover:text-stone-200 hover:bg-white/[0.06]",
       ].join(" ")}
       title={isWatching ? "Watching" : "Add to watchlist"}
     >

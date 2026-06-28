@@ -55,7 +55,7 @@ export function ReleaseItem({
 
   return (
     <li className="group relative flex items-center justify-between gap-4 min-h-[3.25rem] py-3 border-b border-white/[0.06] last:border-0 transition-colors -mx-4 px-4 hover:bg-white/[0.025]">
-      <span className="absolute left-0 top-1/2 -translate-y-1/2 h-0 w-[2px] bg-amber-400 transition-all duration-200 group-hover:h-2/3" />
+      <span className="absolute left-0 top-1/2 -translate-y-1/2 h-0 w-[2px] bg-[#FF00AA] transition-all duration-200 group-hover:h-2/3" />
 
       <div className="flex-1 min-w-0">
         <p className="text-[15px] font-semibold text-stone-50 leading-snug truncate">

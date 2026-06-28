@@ -68,9 +68,9 @@ export function PlatformFilter({ platforms }: { platforms: Platform[] }) {
               aria-pressed={active}
               className={[
                 "shrink-0 min-h-11 px-4 text-[13px] font-medium rounded-full border transition-colors cursor-pointer whitespace-nowrap",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0b0a]",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF00AA]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0b0a]",
                 active
-                  ? "bg-amber-400 text-stone-950 border-amber-400"
+                  ? "bg-[#FF00AA] text-stone-950 border-[#FF00AA]"
                   : "bg-transparent text-stone-400 border-white/[0.1] hover:border-white/20 hover:text-stone-100",
               ].join(" ")}
             >
@@ -82,7 +82,7 @@ export function PlatformFilter({ platforms }: { platforms: Platform[] }) {
           <button
             onClick={clearAll}
             aria-label="Clear all platform filters"
-            className="shrink-0 min-h-11 px-2 text-[13px] text-stone-500 hover:text-stone-300 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70 rounded"
+            className="shrink-0 min-h-11 px-2 text-[13px] text-stone-500 hover:text-stone-300 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF00AA]/70 rounded"
           >
             Clear
           </button>
