@@ -444,6 +444,13 @@ export default async function HomePage({
     .filter((p) => platformSlugs.includes(p.slug))
     .map((p) => p.name);
   const calendarHref = buildHref("calendar", selectedDate, platformSlugs);
+  const backHref = (() => {
+    const params = new URLSearchParams();
+    platformSlugs.forEach((s) => params.append("p", s));
+    const qs = params.toString();
+    return qs ? `/?${qs}` : "/";
+  })();
+  const calendarToggleHref = view === "calendar" ? backHref : calendarHref;
 
   return (
     <div className="min-h-screen bg-[#0c0b0a]">
@@ -454,9 +461,9 @@ export default async function HomePage({
               Streaming Guide
             </h1>
             <Link
-              href={calendarHref}
-              aria-label="Open calendar"
-              aria-current={view === "calendar" ? "page" : undefined}
+              href={calendarToggleHref}
+              aria-label={view === "calendar" ? "Close calendar" : "Open calendar"}
+              aria-pressed={view === "calendar"}
               className={[
                 "h-11 w-11 flex items-center justify-center rounded-full transition-colors",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70",
