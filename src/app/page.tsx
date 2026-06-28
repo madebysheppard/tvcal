@@ -412,6 +412,7 @@ export default async function HomePage({
   const selectedPlatformNames = allPlatforms
     .filter((p) => platformSlugs.includes(p.slug))
     .map((p) => p.name);
+  const calendarHref = buildHref("calendar", selectedDate, platformSlugs);
 
   return (
     <div className="min-h-screen bg-[#0c0b0a]">
@@ -421,16 +422,35 @@ export default async function HomePage({
             <h1 className="font-[family-name:var(--font-heading)] text-lg font-bold tracking-tight text-stone-50">
               Streaming Guide
             </h1>
+            <div className="flex items-center gap-1">
+              <Link
+                href={calendarHref}
+                aria-label="Open calendar"
+                aria-current={view === "calendar" ? "page" : undefined}
+                className={[
+                  "h-11 w-11 flex items-center justify-center rounded-full transition-colors",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70",
+                  view === "calendar"
+                    ? "bg-white/[0.08] text-stone-100"
+                    : "text-stone-400 hover:text-stone-100 hover:bg-white/[0.06]",
+                ].join(" ")}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="3" y="5" width="18" height="16" rx="2" />
+                  <path d="M3 10h18" />
+                  <path d="M8 3v4" />
+                  <path d="M16 3v4" />
+                </svg>
+              </Link>
+              <Suspense>
+                <FilterToggle platforms={allPlatforms} selectedNames={selectedPlatformNames} />
+              </Suspense>
+            </div>
           </div>
 
-          <div className="flex items-center justify-between gap-3">
-            <Suspense>
-              <ViewTabs />
-            </Suspense>
-            <Suspense>
-              <FilterToggle platforms={allPlatforms} selectedNames={selectedPlatformNames} />
-            </Suspense>
-          </div>
+          <Suspense>
+            <ViewTabs />
+          </Suspense>
         </div>
       </header>
 

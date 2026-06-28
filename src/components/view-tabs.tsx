@@ -7,7 +7,6 @@ const TABS = [
   { key: "watching", label: "Watching" },
   { key: "today", label: "Today" },
   { key: "week", label: "This week" },
-  { key: "calendar", label: "Calendar" },
 ] as const;
 
 export function ViewTabs() {
