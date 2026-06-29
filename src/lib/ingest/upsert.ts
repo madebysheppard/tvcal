@@ -51,6 +51,9 @@ export async function upsertSeries(row: IngestSeries) {
         title: row.title,
         description: row.description ?? null,
         artwork: row.artwork ?? null,
+        status: row.status ?? "active",
+        tmdbId: row.tmdbId ?? null,
+        tvmazeId: row.tvmazeId ?? null,
         updatedAt: new Date(),
       },
     });

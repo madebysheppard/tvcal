@@ -234,6 +234,19 @@ function formatNextAirs(ep: {
   return `${code}${dateLabel}${title}`;
 }
 
+function watchedStatusLine(show: WatchedShow): string {
+  if (show.nextEpisode) return formatNextAirs(show.nextEpisode);
+
+  if (show.series.status === "ended") {
+    if (show.lastEpisode?.seasonNumber && show.lastEpisode?.episodeNumber) {
+      return `Series ended · last aired S${show.lastEpisode.seasonNumber} E${show.lastEpisode.episodeNumber}`;
+    }
+    return "Series ended";
+  }
+
+  return "No upcoming episodes scheduled";
+}
+
 function groupWatchedByDate(shows: WatchedShow[]): { dateGroups: { date: string; shows: WatchedShow[] }[]; noDate: WatchedShow[] } {
   const map = new Map<string, WatchedShow[]>();
   const noDate: WatchedShow[] = [];
@@ -253,16 +266,14 @@ function groupWatchedByDate(shows: WatchedShow[]): { dateGroups: { date: string;
 }
 
 function WatchedRow({ show }: { show: WatchedShow }) {
-  const { series: s, platform, nextEpisode } = show;
+  const { series: s, platform } = show;
   return (
     <li className="flex items-center justify-between gap-4 min-h-[3.25rem] py-3 border-b border-white/[0.06] last:border-0">
       <div className="min-w-0 flex-1 flex items-center gap-3">
         <Thumb src={s.artwork} title={s.title} size={10} />
         <div className="min-w-0">
           <p className="text-[15px] font-semibold text-stone-50 truncate">{s.title}</p>
-          <p className="text-[13px] text-stone-400 mt-0.5 truncate">
-            {nextEpisode ? formatNextAirs(nextEpisode) : "No upcoming episodes scheduled"}
-          </p>
+          <p className="text-[13px] text-stone-400 mt-0.5 truncate">{watchedStatusLine(show)}</p>
         </div>
       </div>
       <div className="shrink-0 flex items-center gap-2">

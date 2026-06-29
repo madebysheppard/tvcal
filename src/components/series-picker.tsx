@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { WatchToggle } from "@/components/watch-toggle";
 import { Thumb } from "@/components/thumb";
+import { TvmazeSearch } from "@/components/tvmaze-search";
 
 type SeriesOption = { id: string; title: string; platformName: string; artwork: string | null };
 
@@ -40,6 +41,7 @@ export function SeriesPicker({ series }: { series: SeriesOption[] }) {
           </li>
         ))}
       </ul>
+      <TvmazeSearch query={query} />
     </div>
   );
 }

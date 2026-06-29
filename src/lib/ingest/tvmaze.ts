@@ -1,38 +1,6 @@
 import { resolvePlatformSlugFromName } from "./platform-map";
 import type { IngestRelease, IngestSeries } from "./upsert";
-
-type TvmazeShow = {
-  id: number;
-  name: string;
-  summary: string | null;
-  image: { medium?: string; original?: string } | null;
-  network: { name: string } | null;
-  webChannel: { name: string } | null;
-};
-
-type TvmazeEpisode = {
-  id: number;
-  name: string;
-  season: number;
-  number: number | null;
-  airdate: string;
-  summary: string | null;
-  show?: TvmazeShow;
-  _embedded?: { show: TvmazeShow };
-};
-
-function stripHtml(html: string | null | undefined): string | null {
-  if (!html) return null;
-  const text = html.replace(/<[^>]*>/g, "").trim();
-  return text.length > 0 ? text : null;
-}
-
-function slugify(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
+import { stripHtml, slugify, mapSeriesStatus, type TvmazeEpisode } from "./tvmaze-shared";
 
 async function fetchSchedule(url: string): Promise<TvmazeEpisode[]> {
   const res = await fetch(url);
@@ -93,7 +61,7 @@ export async function fetchTvmazeReleases(
           description: stripHtml(show.summary),
           artwork: show.image?.original ?? show.image?.medium ?? null,
           platformId,
-          status: "active",
+          status: mapSeriesStatus(show.status),
           tvmazeId: show.id,
         });
       }
