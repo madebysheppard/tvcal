@@ -59,14 +59,30 @@ export async function fetchTmdbReleases(
     sort_by: "primary_release_date.asc",
   });
 
+  if (!discover?.results) {
+    console.warn(`  TMDB discovery returned no results`);
+    return { releases: [], skipped: 0 };
+  }
+
   const releases: IngestRelease[] = [];
   let skipped = 0;
 
-  for (const movie of discover?.results ?? []) {
-    const providers = await tmdbGet<TmdbWatchProvidersResponse>(
-      `/movie/${movie.id}/watch/providers`,
-      apiKey
-    );
+  // Fetch watch providers for all movies concurrently instead of sequentially (N+1)
+  const providerResponses = await Promise.allSettled(
+    discover.results.map((movie) =>
+      tmdbGet<TmdbWatchProvidersResponse>(
+        `/movie/${movie.id}/watch/providers`,
+        apiKey
+      )
+    )
+  );
+
+  for (let i = 0; i < discover.results.length; i++) {
+    const movie = discover.results[i];
+    const providerResult = providerResponses[i];
+
+    const providers =
+      providerResult.status === "fulfilled" ? providerResult.value : null;
     const flatrate = providers?.results?.GB?.flatrate ?? [];
 
     const slugs = new Set(

@@ -66,6 +66,7 @@ export async function upsertSeries(row: IngestSeries) {
  * (sourceId, sourceType) when re-running ingestion.
  */
 export async function upsertRelease(row: IngestRelease): Promise<void> {
+  // Episode dedup: match by series + platform + season + episode
   if (row.seriesId && row.seasonNumber != null && row.episodeNumber != null) {
     const existing = await db
       .select({
@@ -96,6 +97,39 @@ export async function upsertRelease(row: IngestRelease): Promise<void> {
           synopsis: current.synopsis ?? row.synopsis ?? null,
           artworkUrl: current.artworkUrl ?? row.artworkUrl ?? null,
           episodeTitle: current.episodeTitle ?? row.episodeTitle ?? null,
+          updatedAt: new Date(),
+        })
+        .where(eq(schema.releases.id, current.id));
+      return;
+    }
+  }
+
+  // Movie dedup: match by title + platform + releaseDate (no series/episode info)
+  if (row.releaseType === "movie" && !row.seriesId) {
+    const existing = await db
+      .select({
+        id: schema.releases.id,
+        synopsis: schema.releases.synopsis,
+        artworkUrl: schema.releases.artworkUrl,
+      })
+      .from(schema.releases)
+      .where(
+        and(
+          eq(schema.releases.platformId, row.platformId),
+          eq(schema.releases.title, row.title),
+          eq(schema.releases.releaseDate, row.releaseDate),
+          ne(schema.releases.sourceId, row.sourceId)
+        )
+      )
+      .limit(1);
+
+    if (existing.length > 0) {
+      const current = existing[0];
+      await db
+        .update(schema.releases)
+        .set({
+          synopsis: current.synopsis ?? row.synopsis ?? null,
+          artworkUrl: current.artworkUrl ?? row.artworkUrl ?? null,
           updatedAt: new Date(),
         })
         .where(eq(schema.releases.id, current.id));

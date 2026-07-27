@@ -15,6 +15,7 @@ export type TvmazeIngestResult = {
   series: IngestSeries[];
   releases: IngestRelease[];
   skipped: number;
+  unmappedNetworks?: Set<string>;
 };
 
 /**
@@ -28,6 +29,7 @@ export async function fetchTvmazeReleases(
 ): Promise<TvmazeIngestResult> {
   const seriesById = new Map<number, IngestSeries>();
   const releases: IngestRelease[] = [];
+  const unmappedNetworks = new Set<string>();
   let skipped = 0;
 
   for (const date of dates) {
@@ -43,6 +45,7 @@ export async function fetchTvmazeReleases(
       const networkName = show.network?.name ?? show.webChannel?.name;
       const slug = resolvePlatformSlugFromName(networkName);
       if (!slug) {
+        if (networkName) unmappedNetworks.add(networkName);
         skipped++;
         continue;
       }
@@ -83,5 +86,10 @@ export async function fetchTvmazeReleases(
     }
   }
 
-  return { series: Array.from(seriesById.values()), releases, skipped };
+  return {
+    series: Array.from(seriesById.values()),
+    releases,
+    skipped,
+    unmappedNetworks: unmappedNetworks.size > 0 ? unmappedNetworks : undefined,
+  };
 }

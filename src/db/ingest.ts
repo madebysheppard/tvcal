@@ -36,7 +36,14 @@ async function ingest() {
 
   console.log(`Fetching TVMaze schedules for ${startDate}..${endDate}...`);
   const tvmaze = await fetchTvmazeReleases(dates, platformIdBySlug);
-  console.log(`  ${tvmaze.series.length} series, ${tvmaze.releases.length} episodes, ${tvmaze.skipped} skipped (unmapped platform)`);
+  if (tvmaze.releases.length === 0 && tvmaze.skipped === 0) {
+    console.warn(`  ⚠️  TVMaze returned no episodes (API may have failed)`);
+  } else {
+    console.log(`  ${tvmaze.series.length} series, ${tvmaze.releases.length} episodes, ${tvmaze.skipped} skipped (unmapped platform)`);
+    if (tvmaze.unmappedNetworks) {
+      console.log(`  Unmapped networks: ${Array.from(tvmaze.unmappedNetworks).join(", ")}`);
+    }
+  }
 
   for (const series of tvmaze.series) {
     await upsertSeries(series);
@@ -51,7 +58,11 @@ async function ingest() {
   } else {
     console.log(`\nFetching TMDB movie releases for ${startDate}..${endDate}...`);
     const tmdb = await fetchTmdbReleases(startDate, endDate, apiKey, platformIdBySlug);
-    console.log(`  ${tmdb.releases.length} releases, ${tmdb.skipped} skipped (no mapped platform)`);
+    if (tmdb.releases.length === 0 && tmdb.skipped === 0) {
+      console.warn(`  ⚠️  TMDB returned no movies (API may have failed)`);
+    } else {
+      console.log(`  ${tmdb.releases.length} releases, ${tmdb.skipped} skipped (no mapped platform)`);
+    }
 
     for (const release of tmdb.releases) {
       await upsertRelease(release);
