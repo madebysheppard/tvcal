@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/header";
 import { BottomTabs } from "@/components/layout/bottom-tabs";
+import { SearchInput } from "@/components/search-input";
 import { getAllSeriesForPicker } from "@/lib/watchlist";
 
 export default async function SearchPage({
@@ -24,17 +25,7 @@ export default async function SearchPage({
       <Header />
 
       <main id="main-content" className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 max-w-7xl mx-auto w-full">
-        {/* Search Form */}
-        <form action="" method="get" className="mb-8">
-          <input
-            type="text"
-            name="q"
-            defaultValue={query}
-            placeholder="Search shows..."
-            className="w-full px-4 py-3 rounded-lg bg-white/[0.06] border border-white/[0.12] text-stone-200 placeholder-stone-500 focus:outline-none focus:border-[#FF00AA]/50 focus:bg-white/[0.08] transition-colors"
-            autoFocus={query.length > 0}
-          />
-        </form>
+        <SearchInput />
 
         {/* Results */}
         {query.trim() && (
