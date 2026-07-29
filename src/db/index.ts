@@ -51,14 +51,17 @@ if (process.env.DATABASE_URL) {
     [Symbol.toStringTag] = "Promise";
   }
 
+  // Create a re-usable instance
+  const emptyQuery = new ChainableQuery([]);
+
   db = {
     select: (fields?: any) => ({
-      from: (table?: any) => new ChainableQuery([]),
+      from: () => emptyQuery,
     }),
 
     insert: (table?: any) => ({
       values: (values?: any) => ({
-        onConflictDoUpdate: (options?: any) => new ChainableQuery(),
+        onConflictDoUpdate: (options?: any) => emptyQuery,
         onConflictDoNothing: (options?: any) => ({
           returning: () => Promise.resolve([]),
         }),
