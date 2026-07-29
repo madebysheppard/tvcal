@@ -5,6 +5,8 @@ import { ReleaseSkeleton } from "@/components/release-skeleton";
 import { WatchToggle } from "@/components/watch-toggle";
 import { AddShowToggle } from "@/components/add-show-toggle";
 import { Thumb } from "@/components/thumb";
+import { Header } from "@/components/layout/header";
+import { BottomTabs } from "@/components/layout/bottom-tabs";
 
 function formatHeading(dateStr: string): { weekday: string; date: string } {
   const d = new Date(`${dateStr}T00:00:00`);
@@ -132,24 +134,17 @@ async function WatchingView() {
 
 
 export default async function HomePage() {
-  const [watchedSeriesIds] = await Promise.all([getWatchedSeriesIds()]);
-
   return (
-    <div className="min-h-screen bg-[#0c0b0a]">
-      <header className="sticky top-0 z-20 border-b border-white/[0.06] bg-[#0c0b0a]/95 backdrop-blur-sm">
-        <div className="max-w-2xl mx-auto px-5 pt-5 pb-5">
-          <h1 className="font-[family-name:var(--font-heading)] text-lg font-bold tracking-tight text-stone-50 text-center">
-            Streaming Guide
-          </h1>
-        </div>
-      </header>
+    <div className="min-h-screen flex flex-col bg-[#0c0b0a] text-stone-200 pb-20 sm:pb-24">
+      <Header />
 
-      <main id="main-content" className="max-w-2xl mx-auto px-5 py-8">
+      <main id="main-content" className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 max-w-7xl mx-auto w-full">
         <Suspense fallback={<ReleaseSkeleton />}>
           <WatchingView />
         </Suspense>
       </main>
 
+      <BottomTabs />
     </div>
   );
 }
