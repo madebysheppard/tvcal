@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const tabs = [
-  { href: '/app', label: 'Guide', icon: 'guide' },
+  { href: '/', label: 'Guide', icon: 'guide' },
   { href: '/search', label: 'Search', icon: 'search' },
   { href: '/watchlist', label: 'Watchlist', icon: 'star' },
 ];
@@ -44,7 +44,7 @@ export function BottomTabs() {
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#0c0b0a]/95 backdrop-blur-sm border-t border-white/[0.06] safe-area-inset-bottom animate-fade-in">
       <div className="flex items-stretch h-16 sm:h-20 max-w-7xl mx-auto">
         {tabs.map((tab, idx) => {
-          const isActive = pathname === tab.href || (tab.href === '/app' && pathname?.includes('/app'));
+          const isActive = pathname === tab.href;
           return (
             <Link
               key={tab.href}

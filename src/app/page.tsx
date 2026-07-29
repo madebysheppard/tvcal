@@ -1,24 +1,14 @@
-import Link from "next/link";
-import { getReleasesForRange, groupByDate } from "@/lib/releases";
-import { getWatchlistWithUpcoming, getAllSeriesForPicker } from "@/lib/watchlist";
+import { Suspense } from "react";
+import { getWatchedSeriesIds, getWatchlistWithUpcoming, getAllSeriesForPicker } from "@/lib/watchlist";
 import type { WatchedShow } from "@/lib/watchlist";
+import { ReleaseSkeleton } from "@/components/release-skeleton";
+import { WatchToggle } from "@/components/watch-toggle";
+import { AddShowToggle } from "@/components/add-show-toggle";
+import { Thumb } from "@/components/thumb";
 import { Header } from "@/components/layout/header";
 import { BottomTabs } from "@/components/layout/bottom-tabs";
-import { SeriesPicker } from "@/components/series-picker";
-import { ReleaseItem } from "@/components/release-item";
-import { PlatformFilters } from "@/components/platform-filters";
-import { db } from "@/db";
-import * as schema from "@/db/schema";
 
-function localDateString(d: Date): string {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
-function todayDateString(): string {
-  return localDateString(new Date());
-}
-
-function formatHeading(dateStr: string) {
+function formatHeading(dateStr: string): { weekday: string; date: string } {
   const d = new Date(`${dateStr}T00:00:00`);
   return {
     weekday: d.toLocaleDateString("en-GB", { weekday: "long" }),
@@ -26,122 +16,131 @@ function formatHeading(dateStr: string) {
   };
 }
 
-export default async function GuidePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ platforms?: string }>;
-}) {
-  const todayStr = todayDateString();
-  const params = await searchParams;
-  const selectedPlatforms = params.platforms?.split(',') || [];
+function formatNextAirs(ep: {
+  releaseDate: string;
+  seasonNumber: number | null;
+  episodeNumber: number | null;
+  episodeTitle: string | null;
+}): string {
+  const d = new Date(`${ep.releaseDate}T00:00:00`);
+  const dateLabel = d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+  const code = ep.seasonNumber && ep.episodeNumber ? `S${ep.seasonNumber} E${ep.episodeNumber} · ` : "";
+  const title = ep.episodeTitle ? ` "${ep.episodeTitle}"` : "";
+  return `${code}${dateLabel}${title}`;
+}
 
-  const [watched, weekReleases, allSeries, allPlatforms] = await Promise.all([
-    getWatchlistWithUpcoming(),
-    getReleasesForRange(0, 13),
-    getAllSeriesForPicker(),
-    db.select().from(schema.platforms),
-  ]);
+function watchedStatusLine(show: WatchedShow): string {
+  if (show.nextEpisode) return formatNextAirs(show.nextEpisode);
 
-  const upcomingWatched = watched
-    .filter((w): w is WatchedShow & { nextEpisode: NonNullable<WatchedShow["nextEpisode"]> } => !!w.nextEpisode)
-    .sort((a, b) => a.nextEpisode.releaseDate.localeCompare(b.nextEpisode.releaseDate));
+  if (show.series.status === "ended") {
+    if (show.lastEpisode?.seasonNumber && show.lastEpisode?.episodeNumber) {
+      return `Series ended · last aired S${show.lastEpisode.seasonNumber} E${show.lastEpisode.episodeNumber}`;
+    }
+    return "Series ended";
+  }
 
-  const heroShow = upcomingWatched[0] ?? null;
+  return "No upcoming episodes scheduled";
+}
 
-  const watchedIds = new Set(watched.map((w) => w.series.id));
+function groupWatchedByDate(shows: WatchedShow[]): { dateGroups: { date: string; shows: WatchedShow[] }[]; noDate: WatchedShow[] } {
+  const map = new Map<string, WatchedShow[]>();
+  const noDate: WatchedShow[] = [];
+  for (const s of shows) {
+    if (!s.nextEpisode) {
+      noDate.push(s);
+      continue;
+    }
+    const arr = map.get(s.nextEpisode.releaseDate) ?? [];
+    arr.push(s);
+    map.set(s.nextEpisode.releaseDate, arr);
+  }
+  const dateGroups = Array.from(map.keys())
+    .sort()
+    .map((date) => ({ date, shows: map.get(date)! }));
+  return { dateGroups, noDate };
+}
+
+function WatchedRow({ show }: { show: WatchedShow }) {
+  const { series: s, platform } = show;
+  return (
+    <li className="flex items-center justify-between gap-4 min-h-[3.25rem] py-3 border-b border-white/[0.06] last:border-0">
+      <div className="min-w-0 flex-1 flex items-center gap-3">
+        <Thumb src={s.artwork} title={s.title} size={10} />
+        <div className="min-w-0">
+          <p className="text-[15px] font-semibold text-stone-50 truncate">{s.title}</p>
+          <p className="text-[13px] text-stone-400 mt-0.5 truncate">{watchedStatusLine(show)}</p>
+        </div>
+      </div>
+      <div className="shrink-0 flex items-center gap-2">
+        <span className="text-[11px] font-medium uppercase tracking-wide text-stone-500 whitespace-nowrap">
+          {platform.name}
+        </span>
+        <WatchToggle seriesId={s.id} isWatching={true} />
+      </div>
+    </li>
+  );
+}
+
+async function WatchingView() {
+  const [shows, allSeries] = await Promise.all([getWatchlistWithUpcoming(), getAllSeriesForPicker()]);
+  const watchedIds = new Set(shows.map((s) => s.series.id));
   const pickerOptions = allSeries.filter((s) => !watchedIds.has(s.id));
+  const { dateGroups, noDate } = groupWatchedByDate(shows);
 
-  // Filter by selected platforms if any
-  const watchedWeekReleases = weekReleases.filter((r) => {
-    if (!r.series || !watchedIds.has(r.series.id)) return false;
-    if (selectedPlatforms.length === 0) return true;
-    return selectedPlatforms.includes(r.platformId);
-  });
+  return (
+    <section aria-labelledby="heading-watching">
+      <h2 id="heading-watching" className="sr-only">Shows you&apos;re watching</h2>
 
-  const dateGroups = groupByDate(watchedWeekReleases).filter(({ date }) => date >= todayStr);
+      {shows.length === 0 ? (
+        <p className="text-sm text-stone-500 py-6 mb-4">
+          You&apos;re not watching anything yet — add a show below to see its upcoming episodes here.
+        </p>
+      ) : (
+        <div className="space-y-8 mb-10">
+          {dateGroups.map(({ date, shows: dayShows }) => {
+            const { weekday, date: dateLabel } = formatHeading(date);
+            return (
+              <div key={date}>
+                <div className="flex items-baseline gap-2.5 mb-2">
+                  <h3 className="font-[family-name:var(--font-heading)] text-base font-bold text-stone-50">{weekday}</h3>
+                  <span className="text-sm text-stone-500">{dateLabel}</span>
+                </div>
+                <ul role="list">
+                  {dayShows.map((show) => (
+                    <WatchedRow key={show.series.id} show={show} />
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
 
+          {noDate.length > 0 && (
+            <div>
+              <h3 className="text-sm font-semibold text-stone-400 mb-2">No date scheduled</h3>
+              <ul role="list">
+                {noDate.map((show) => (
+                  <WatchedRow key={show.series.id} show={show} />
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+
+      <AddShowToggle series={pickerOptions} />
+    </section>
+  );
+}
+
+export default async function HomePage() {
   return (
     <div className="min-h-screen flex flex-col bg-[#0c0b0a] text-stone-200 pb-20 sm:pb-24">
       <Header />
 
-      <PlatformFilters platforms={allPlatforms} />
-
-      <main id="main-content" className="flex-1 w-full">
-        {/* Featured Hero */}
-        {heroShow && (
-          <section className="relative overflow-hidden h-64 sm:h-80 md:h-96 flex flex-col justify-end p-6 sm:p-8 animate-fade-in-up">
-            {heroShow.series.artwork && (
-              <div
-                aria-hidden="true"
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: `url(${heroShow.series.artwork})` }}
-              />
-            )}
-            <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[#0c0b0a] via-[#0c0b0a]/50 to-transparent" />
-
-            <div className="relative z-10 space-y-3 max-w-2xl">
-              <div>
-                <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight">
-                  {heroShow.series.title}
-                </h2>
-              </div>
-
-              <p className="text-stone-300 text-sm md:text-base">
-                {heroShow.nextEpisode.seasonNumber && heroShow.nextEpisode.episodeNumber && (
-                  <span className="font-mono text-white/80 mr-2">
-                    S{heroShow.nextEpisode.seasonNumber} E{heroShow.nextEpisode.episodeNumber}
-                  </span>
-                )}
-                {heroShow.nextEpisode.episodeTitle && `"${heroShow.nextEpisode.episodeTitle}"`}
-              </p>
-
-              <div className="flex items-center justify-between pt-2">
-                <span className="text-[#FF00AA] font-semibold">
-                  {formatHeading(heroShow.nextEpisode.releaseDate).weekday}
-                </span>
-                <span className="text-[11px] font-medium uppercase tracking-wide text-white/70 border border-white/25 rounded-full px-3 py-1">
-                  {heroShow.platform.name}
-                </span>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* This Week Section */}
-        <section className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6 max-w-7xl mx-auto w-full">
-          <h2 className="text-[12px] uppercase tracking-[0.15em] font-semibold text-stone-400 ml-2">
-            This Week
-          </h2>
-
-          {dateGroups.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-stone-500 text-sm">
-                {watched.length === 0
-                  ? "Nothing on your list yet — search to add shows."
-                  : "Nothing from your watchlist airs in the next 2 weeks."}
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-8 animate-stagger">
-              {dateGroups.map(({ date, releases }) => (
-                <div key={date} className="space-y-3">
-                  <h3 className="text-sm font-semibold text-stone-200 uppercase tracking-wide px-2">
-                    {formatHeading(date).weekday}
-                    <span className="font-normal text-stone-500 ml-2">{formatHeading(date).date}</span>
-                  </h3>
-                  <ul className="space-y-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                    {releases.map((release) => (
-                      <li key={release.id}>
-                        <ReleaseItem release={release} />
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-
+      <main id="main-content" className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 max-w-7xl mx-auto w-full">
+        <Suspense fallback={<ReleaseSkeleton />}>
+          <WatchingView />
+        </Suspense>
       </main>
 
       <BottomTabs />
