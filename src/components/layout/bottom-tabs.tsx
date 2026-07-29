@@ -49,21 +49,22 @@ export function BottomTabs() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#0c0b0a]/95 backdrop-blur-sm border-t border-white/[0.06] safe-area-inset-bottom">
-      <div className="flex items-stretch h-16">
-        {tabs.map((tab) => {
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#0c0b0a]/95 backdrop-blur-sm border-t border-white/[0.06] safe-area-inset-bottom animate-fade-in">
+      <div className="flex items-stretch h-16 sm:h-20 max-w-7xl mx-auto">
+        {tabs.map((tab, idx) => {
           const isActive = pathname === tab.href || (tab.href === '/app' && pathname?.includes('/app'));
           return (
             <Link
               key={tab.href}
               href={tab.href}
-              className={`flex-1 flex flex-col items-center justify-center gap-1 transition-colors ${
+              className={`flex-1 flex flex-col items-center justify-center gap-1 transition-all duration-200 active:scale-95 ${
                 isActive ? 'text-[#FF00AA]' : 'text-stone-500 hover:text-stone-300'
               }`}
+              style={{ animationDelay: `${idx * 50}ms` }}
               aria-current={isActive ? 'page' : undefined}
             >
               <TabIcon name={tab.icon} />
-              <span className="text-[10px] font-medium uppercase tracking-tight hidden sm:inline">
+              <span className="text-[10px] font-medium uppercase tracking-tight hidden sm:inline text-xs sm:text-[11px]">
                 {tab.label}
               </span>
             </Link>

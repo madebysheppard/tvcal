@@ -45,13 +45,13 @@ export default async function GuidePage() {
   const dateGroups = groupByDate(watchedWeekReleases).filter(({ date }) => date >= todayStr);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0c0b0a] text-stone-200 pb-20">
+    <div className="min-h-screen flex flex-col bg-[#0c0b0a] text-stone-200 pb-20 sm:pb-24">
       <Header />
 
       <main id="main-content" className="flex-1 w-full">
         {/* Featured Hero */}
         {heroShow && (
-          <section className="relative overflow-hidden h-64 sm:h-80 flex flex-col justify-end p-6">
+          <section className="relative overflow-hidden h-64 sm:h-80 md:h-96 flex flex-col justify-end p-6 sm:p-8 animate-fade-in-up">
             {heroShow.series.artwork && (
               <div
                 aria-hidden="true"
@@ -61,14 +61,14 @@ export default async function GuidePage() {
             )}
             <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[#0c0b0a] via-[#0c0b0a]/50 to-transparent" />
 
-            <div className="relative z-10 space-y-3">
+            <div className="relative z-10 space-y-3 max-w-2xl">
               <div>
-                <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl font-bold text-white leading-tight">
+                <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight">
                   {heroShow.series.title}
                 </h2>
               </div>
 
-              <p className="text-stone-300 text-sm">
+              <p className="text-stone-300 text-sm md:text-base">
                 {heroShow.nextEpisode.seasonNumber && heroShow.nextEpisode.episodeNumber && (
                   <span className="font-mono text-white/80 mr-2">
                     S{heroShow.nextEpisode.seasonNumber} E{heroShow.nextEpisode.episodeNumber}
@@ -90,7 +90,7 @@ export default async function GuidePage() {
         )}
 
         {/* This Week Section */}
-        <section className="px-4 py-8 space-y-6">
+        <section className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6 max-w-7xl mx-auto w-full">
           <h2 className="text-[12px] uppercase tracking-[0.15em] font-semibold text-stone-400 ml-2">
             This Week
           </h2>
@@ -104,14 +104,14 @@ export default async function GuidePage() {
               </p>
             </div>
           ) : (
-            <div className="space-y-8">
+            <div className="space-y-8 animate-stagger">
               {dateGroups.map(({ date, releases }) => (
                 <div key={date} className="space-y-3">
                   <h3 className="text-sm font-semibold text-stone-200 uppercase tracking-wide px-2">
                     {formatHeading(date).weekday}
                     <span className="font-normal text-stone-500 ml-2">{formatHeading(date).date}</span>
                   </h3>
-                  <ul className="space-y-2">
+                  <ul className="space-y-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                     {releases.map((release) => (
                       <li key={release.id}>
                         <ReleaseItem release={release} />
@@ -125,7 +125,7 @@ export default async function GuidePage() {
         </section>
 
         {/* Add Show */}
-        <section className="px-4 py-8 border-t border-white/[0.06]">
+        <section className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12 border-t border-white/[0.06] max-w-7xl mx-auto w-full">
           <h2 className="text-[12px] uppercase tracking-[0.15em] font-semibold text-stone-400 mb-4 ml-2">
             Add Show
           </h2>

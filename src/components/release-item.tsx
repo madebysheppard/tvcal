@@ -22,14 +22,14 @@ export function ReleaseItem({ release }: { release: ReleaseWithRelations }) {
   const platformName = release.platform.name;
 
   return (
-    <div className="flex items-start gap-4 p-4 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] transition-colors">
+    <div className="flex items-start gap-4 p-4 sm:p-5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]">
       <Thumb src={release.series?.artwork ?? release.artworkUrl} title={showTitle} size={14} />
 
       <div className="flex-1 min-w-0 flex flex-col gap-1">
-        <h3 className="font-semibold text-stone-50 text-base leading-tight">
+        <h3 className="font-semibold text-stone-50 text-base sm:text-lg leading-tight">
           {showTitle}
         </h3>
-        <p className="text-sm text-stone-400">
+        <p className="text-sm sm:text-base text-stone-400">
           {episodeCode && <span className="font-mono mr-2">{episodeCode}</span>}
           <span>{platformName}</span>
         </p>
