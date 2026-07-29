@@ -6,6 +6,9 @@ import { Header } from "@/components/layout/header";
 import { BottomTabs } from "@/components/layout/bottom-tabs";
 import { SeriesPicker } from "@/components/series-picker";
 import { ReleaseItem } from "@/components/release-item";
+import { PlatformFilters } from "@/components/platform-filters";
+import { db } from "@/db";
+import * as schema from "@/db/schema";
 
 function localDateString(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -23,13 +26,20 @@ function formatHeading(dateStr: string) {
   };
 }
 
-export default async function GuidePage() {
+export default async function GuidePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ platforms?: string }>;
+}) {
   const todayStr = todayDateString();
+  const params = await searchParams;
+  const selectedPlatforms = params.platforms?.split(',') || [];
 
-  const [watched, weekReleases, allSeries] = await Promise.all([
+  const [watched, weekReleases, allSeries, allPlatforms] = await Promise.all([
     getWatchlistWithUpcoming(),
     getReleasesForRange(0, 13),
     getAllSeriesForPicker(),
+    db.select().from(schema.platforms),
   ]);
 
   const upcomingWatched = watched
@@ -41,12 +51,20 @@ export default async function GuidePage() {
   const watchedIds = new Set(watched.map((w) => w.series.id));
   const pickerOptions = allSeries.filter((s) => !watchedIds.has(s.id));
 
-  const watchedWeekReleases = weekReleases.filter((r) => r.series && watchedIds.has(r.series.id));
+  // Filter by selected platforms if any
+  const watchedWeekReleases = weekReleases.filter((r) => {
+    if (!r.series || !watchedIds.has(r.series.id)) return false;
+    if (selectedPlatforms.length === 0) return true;
+    return selectedPlatforms.includes(r.platformId);
+  });
+
   const dateGroups = groupByDate(watchedWeekReleases).filter(({ date }) => date >= todayStr);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0c0b0a] text-stone-200 pb-20 sm:pb-24">
       <Header />
+
+      <PlatformFilters platforms={allPlatforms} />
 
       <main id="main-content" className="flex-1 w-full">
         {/* Featured Hero */}
