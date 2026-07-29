@@ -142,13 +142,6 @@ export default async function GuidePage({
           )}
         </section>
 
-        {/* Add Show */}
-        <section className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12 border-t border-white/[0.06] max-w-7xl mx-auto w-full">
-          <h2 className="text-[12px] uppercase tracking-[0.15em] font-semibold text-stone-400 mb-4 ml-2">
-            Add Show
-          </h2>
-          <SeriesPicker series={pickerOptions} />
-        </section>
       </main>
 
       <BottomTabs />

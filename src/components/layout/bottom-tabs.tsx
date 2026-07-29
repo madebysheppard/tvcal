@@ -7,7 +7,6 @@ const tabs = [
   { href: '/app', label: 'Guide', icon: 'guide' },
   { href: '/search', label: 'Search', icon: 'search' },
   { href: '/watchlist', label: 'Watchlist', icon: 'star' },
-  { href: '/settings', label: 'Settings', icon: 'settings' },
 ];
 
 function TabIcon({ name }: { name: string }) {
@@ -31,13 +30,6 @@ function TabIcon({ name }: { name: string }) {
       return (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <polygon points="12 2 15.09 10.26 24 10.27 17.18 16.70 19.36 25.07 12 19.64 4.64 25.07 6.82 16.70 0 10.27 8.91 10.26 12 2" />
-        </svg>
-      );
-    case 'settings':
-      return (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="3" />
-          <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m3.08 3.08l4.24 4.24M1 12h6m6 0h6M4.22 19.78l4.24-4.24m3.08-3.08l4.24-4.24M19.78 19.78l-4.24-4.24m-3.08-3.08l-4.24-4.24" />
         </svg>
       );
     default:
