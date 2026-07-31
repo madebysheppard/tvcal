@@ -3,8 +3,6 @@
 import type { ReleaseWithRelations } from "@/lib/releases";
 import { WatchToggle } from "@/components/watch-toggle";
 import { Thumb } from "@/components/thumb";
-import { useOptimistic } from "react";
-import { watchShowAction } from "@/lib/watchlist-actions";
 
 function episodeMeta(r: ReleaseWithRelations): string | null {
   if (r.releaseType === "episode" && r.seasonNumber && r.episodeNumber) {
