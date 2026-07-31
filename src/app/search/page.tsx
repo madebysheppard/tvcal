@@ -11,7 +11,7 @@ export default async function SearchPage({
   const params = await searchParams;
   const query = params.q || "";
 
-  let results: typeof Awaited<ReturnType<typeof getAllSeriesForPicker>> = [];
+  let results: any[] = [];
   if (query.trim()) {
     const allSeries = await getAllSeriesForPicker();
     const lowerQuery = query.toLowerCase();
