@@ -11,12 +11,12 @@ export default async function SearchPage({
   const params = await searchParams;
   const query = params.q || "";
 
-  let results = [];
+  let results: typeof Awaited<ReturnType<typeof getAllSeriesForPicker>> = [];
   if (query.trim()) {
     const allSeries = await getAllSeriesForPicker();
     const lowerQuery = query.toLowerCase();
     results = allSeries
-      .filter((s) => s.title.toLowerCase().includes(lowerQuery))
+      .filter((s: any) => s.title.toLowerCase().includes(lowerQuery))
       .slice(0, 50);
   }
 
