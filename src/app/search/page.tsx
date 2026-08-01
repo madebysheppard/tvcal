@@ -1,7 +1,8 @@
 import { Header } from "@/components/layout/header";
 import { BottomTabs } from "@/components/layout/bottom-tabs";
 import { SearchInput } from "@/components/search-input";
-import { getAllSeriesForPicker } from "@/lib/watchlist";
+import { getAllSeriesForPicker, getWatchedSeriesIds } from "@/lib/watchlist";
+import { WatchToggle } from "@/components/watch-toggle";
 
 type SeriesForPicker = Awaited<ReturnType<typeof getAllSeriesForPicker>>[number];
 
@@ -12,6 +13,8 @@ export default async function SearchPage({
 }) {
   const params = await searchParams;
   const query = params.q || "";
+
+  const watched = await getWatchedSeriesIds();
 
   let results: SeriesForPicker[] = [];
   if (query.trim()) {
@@ -62,6 +65,11 @@ export default async function SearchPage({
                           {show.platformName}
                         </p>
                       </div>
+                      <WatchToggle
+                        seriesId={show.id}
+                        isWatching={watched.has(show.id)}
+                        variant="block"
+                      />
                     </div>
                   ))}
                 </div>
