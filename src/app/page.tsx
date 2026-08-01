@@ -1,6 +1,5 @@
-import Link from "next/link";
 import { getReleasesForRange, groupByDate } from "@/lib/releases";
-import { getWatchlistWithUpcoming, getAllSeriesForPicker } from "@/lib/watchlist";
+import { getWatchlistWithUpcoming } from "@/lib/watchlist";
 import type { WatchedShow } from "@/lib/watchlist";
 import { Header } from "@/components/layout/header";
 import { BottomTabs } from "@/components/layout/bottom-tabs";

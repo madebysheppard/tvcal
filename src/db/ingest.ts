@@ -28,7 +28,7 @@ async function ingest() {
   const { upsertSeries, upsertRelease } = await import("@/lib/ingest/upsert");
 
   const platforms = await db.select().from(schema.platforms);
-  const platformIdBySlug = new Map(platforms.map((p) => [p.slug, p.id]));
+  const platformIdBySlug = new Map<string, string>(platforms.map((p) => [p.slug, p.id]));
 
   const dates = Array.from({ length: RANGE_DAYS }, (_, i) => daysFromNow(i));
   const startDate = dates[0];

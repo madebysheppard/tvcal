@@ -3,6 +3,8 @@ import { BottomTabs } from "@/components/layout/bottom-tabs";
 import { SearchInput } from "@/components/search-input";
 import { getAllSeriesForPicker } from "@/lib/watchlist";
 
+type SeriesForPicker = Awaited<ReturnType<typeof getAllSeriesForPicker>>[number];
+
 export default async function SearchPage({
   searchParams,
 }: {
@@ -11,12 +13,12 @@ export default async function SearchPage({
   const params = await searchParams;
   const query = params.q || "";
 
-  let results: any[] = [];
+  let results: SeriesForPicker[] = [];
   if (query.trim()) {
     const allSeries = await getAllSeriesForPicker();
     const lowerQuery = query.toLowerCase();
     results = allSeries
-      .filter((s: any) => s.title.toLowerCase().includes(lowerQuery))
+      .filter((s: SeriesForPicker) => s.title.toLowerCase().includes(lowerQuery))
       .slice(0, 50);
   }
 

@@ -59,7 +59,7 @@ export async function getReleasesForDate(
     )
     .orderBy(platforms.name, releases.title);
 
-  return rows.map((r) => ({
+  return rows.map((r: typeof rows[number]) => ({
     id: r.id,
     title: r.title,
     releaseDate: r.releaseDate,
@@ -122,7 +122,7 @@ export async function getReleasesForRange(
     )
     .orderBy(releases.releaseDate, platforms.name, releases.title);
 
-  return rows.map((r) => ({
+  return rows.map((r: typeof rows[number]) => ({
     id: r.id,
     title: r.title,
     releaseDate: r.releaseDate,

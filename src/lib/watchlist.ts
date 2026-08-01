@@ -9,7 +9,7 @@ function todayDateString(): string {
 
 export async function getWatchedSeriesIds(): Promise<Set<string>> {
   const rows = await db.select({ seriesId: watchlist.seriesId }).from(watchlist);
-  return new Set(rows.map((r) => r.seriesId));
+  return new Set(rows.map((r: typeof rows[number]) => r.seriesId));
 }
 
 type EpisodeRef = {
@@ -46,7 +46,7 @@ export async function getWatchlistWithUpcoming(): Promise<WatchedShow[]> {
 
   if (watched.length === 0) return [];
 
-  const seriesIds = watched.map((w) => w.seriesId);
+  const seriesIds = watched.map((w: typeof watched[number]) => w.seriesId);
   const todayStr = todayDateString();
 
   const [upcoming, past] = await Promise.all([
@@ -96,7 +96,7 @@ export async function getWatchlistWithUpcoming(): Promise<WatchedShow[]> {
     if (r.seriesId && !lastByShow.has(r.seriesId)) lastByShow.set(r.seriesId, r);
   }
 
-  return watched.map((w) => ({
+  return watched.map((w: typeof watched[number]) => ({
     series: { id: w.seriesId, title: w.seriesTitle, slug: w.seriesSlug, artwork: w.artwork, status: w.status },
     platform: { id: w.platformId, name: w.platformName, slug: w.platformSlug },
     nextEpisode: nextByShow.get(w.seriesId) ?? null,
