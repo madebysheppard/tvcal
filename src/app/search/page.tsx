@@ -59,7 +59,7 @@ export default async function SearchPage({
                           {show.title}
                         </h3>
                         <p className="text-xs text-stone-500 mt-1 truncate">
-                          {show.network}
+                          {show.platformName}
                         </p>
                       </div>
                     </div>
